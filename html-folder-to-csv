@@ -1,0 +1,35 @@
+/**
+ * This code look for html files inside a folder then load those html and grab specific html from that file 
+ * in this example it will be <section> tag then download it as a csv
+ * 
+ */
+
+$files = File::files(public_path('snippets'));
+    $encodedSections = [];
+
+    foreach ($files as $file) {
+        if ($file->getExtension() === 'html') {
+            $htmlContent = File::get($file);
+
+            $dom = new \DOMDocument();
+            @$dom->loadHTML($htmlContent);
+            $sectionTags = $dom->getElementsByTagName('section');
+            foreach ($sectionTags as $section) {
+                $encodedSections[] = ['name' => str_replace('.html', '', $file->getFilename()), 'content' => json_encode($dom->saveHTML($section))];
+            }
+        }
+    }
+
+    $csvFileName = 'sections.csv';
+    $csvFile = fopen(public_path($csvFileName), 'w');
+
+    // Writing header to the CSV
+    fputcsv($csvFile, ['name', 'content']);
+
+    foreach ($encodedSections as $section) {
+        fputcsv($csvFile, $section);
+    }
+
+    fclose($csvFile);
+
+    return response()->download(public_path($csvFileName));
