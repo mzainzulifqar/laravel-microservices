@@ -1,0 +1,46 @@
+foreach ($grid as $gridItem) {
+    if($gridItem->type == 'local_snippet')
+    {
+        $gridSnippet = $gridItem->localSnippets;
+    } else {
+        $gridSnippet = $gridItem->globalSnippets;
+    }
+
+    $newSnippet = new SsaGlobalSnippet();
+    $newSnippet->title = 'Colibri-' . $gridSnippet->title;
+    $newSnippet->snippet_hash = Str::uuid();
+    $newSnippet->short_code = '[[' . strtoupper(generateAlias()) . ']]';
+    $newSnippet->site_super_admin = ;
+    $newSnippet->css_template = 'muse';
+    $newSnippet->content = (trim($gridSnippet->content));
+    $newSnippet->save();
+
+    foreach ($gridItem->subslots as $slot) {
+        if ($slot->type == 'local_snippet') {
+            $newSnippet = new SsaGlobalSnippet();
+            $newSnippet->title = 'Colibri-Tab - ' . $slot->localSnippetsContent->title;
+            $newSnippet->snippet_hash = Str::uuid();
+            $newSnippet->short_code = '[[' . strtoupper(generateAlias()) . ']]';
+            $newSnippet->site_super_admin = 3;
+            $newSnippet->css_template = 'muse';
+            $newSnippet->content = (trim($slot->localSnippetsContent->content));
+            $newSnippet->save();
+        } else if ($slot->type == 'global_snippet')
+        {
+            $newSnippet = new SsaGlobalSnippet();
+            $newSnippet->title = 'Colibri-Tab - ' . $slot->globalSnippetsContent->title;
+            $newSnippet->snippet_hash = Str::uuid();
+            $newSnippet->short_code = '[[' . strtoupper(generateAlias()) . ']]';
+            $newSnippet->site_super_admin = ;
+            $newSnippet->css_template = 'muse';
+            $newSnippet->content = (trim($slot->globalSnippetsContent->content));
+            $newSnippet->save();
+        } else 
+        {
+
+        }
+    }
+                
+}
+
+die();
